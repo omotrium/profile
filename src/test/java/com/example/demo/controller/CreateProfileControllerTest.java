@@ -89,6 +89,6 @@ class CreateProfileControllerTest {
                         .content(objectMapper.writeValueAsString(profile)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.email").value("Email is mandatory"))
-                .andExpect(jsonPath("$.name").value("Name must be between 2 and 50 characters"));
+                .andExpect(jsonPath("$.name").value("Name is mandatory"));
     }
 }

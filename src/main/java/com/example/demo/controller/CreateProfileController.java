@@ -30,18 +30,6 @@ public class CreateProfileController {
         this.createProfileService = createProfileService;
     }
 
-    // Create Profile
-//    @PostMapping
-//    public Profile createProfile(@RequestBody Profile profile) {
-//        return createProfileService.createProfile(profile);
-//    }
-
-//    @PostMapping
-//    public ResponseEntity<Profile> createProfile(@Valid @RequestBody Profile profile) {
-//        Profile savedProfile = createProfileService.createProfile(profile);
-//        return ResponseEntity.ok(savedProfile);
-//    }
-
     @PostMapping
     public ResponseEntity<?> createProfile(@Valid @RequestBody Profile profile, BindingResult result) {
         if (result.hasErrors()) {

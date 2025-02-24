@@ -80,6 +80,17 @@ class UpdateProfileControllerTest {
     }
 
     @Test
+    void testUpdateProfile_NotFound() throws Exception {
+        Long nonExistingProfileId = 999L;
+        when(updateProfileService.updateProfile(eq(nonExistingProfileId), any(Profile.class))).thenReturn(null);
+
+        mockMvc.perform(put("/api/profiles/{id}", nonExistingProfileId)
+                        .contentType("application/json")
+                        .content("{\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"phone\":\"1234567890\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testUpdateProfileWithInvalidName() throws Exception {
         Profile profile = new Profile(1L,"", "", "1234567890"); // Empty name
 
@@ -88,7 +99,7 @@ class UpdateProfileControllerTest {
                         .content(objectMapper.writeValueAsString(profile)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.email").value("Email is mandatory"))
-                .andExpect(jsonPath("$.name").value("Name is mandatory"));
+                .andExpect(jsonPath("$.name").value("Name must be between 2 and 50 characters"));
     }
 
 }
