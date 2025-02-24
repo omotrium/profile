@@ -13,9 +13,17 @@ public class CreateProfileService {
     @Autowired
     private ProfileRepository profileRepository;
 
-
-    public Profile createProfile(Profile profile) {
-        return profileRepository.save(profile);
+    public CreateProfileService(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
     }
+
+
+    public Profile createProfile(Profile request) {
+        if (profileRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        return profileRepository.save(request);
+    }
+
 
 }

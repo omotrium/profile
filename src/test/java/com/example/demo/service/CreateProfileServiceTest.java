@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -48,4 +47,19 @@ class CreateProfileServiceTest {
         verify(profileRepository, times(1)).save(profile1);
     }
 
+    @Test
+    void testCreateProfile_DuplicateEmail_ThrowsException() {
+        Profile profile = new Profile();
+        profile.setName("John Doe");
+        profile.setEmail("john@example.com");
+
+        when(profileRepository.existsByEmail(profile.getEmail())).thenReturn(true);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            createProfileService.createProfile(profile);
+        });
+
+        assertTrue(exception.getMessage().contains("Email is already in use"));
+        verify(profileRepository, never()).save(any(Profile.class));
+    }
 }

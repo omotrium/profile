@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.controller.GetProfileController;
 import com.example.demo.model.Profile;
 import com.example.demo.repository.ProfileRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,4 +67,16 @@ class GetProfileServiceTest {
         verify(profileRepository, times(1)).findById(1L);
     }
 
+    @Test
+    void testGetProfileById_NotFound_ThrowsException() {
+        Long nonExistentId = 999L;
+
+        when(profileRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> {
+            getProfileService.getProfileById(nonExistentId).orElseThrow(() -> new EntityNotFoundException("Profile not found"));
+        });
+
+        assertEquals("Profile not found", exception.getMessage());
+    }
 }

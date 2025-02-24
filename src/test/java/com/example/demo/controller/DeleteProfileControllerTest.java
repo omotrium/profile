@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.service.DeleteProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,5 +42,23 @@ class DeleteProfileControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(deleteProfileService, times(1)).deleteProfile(1L);
+    }
+
+    @Test
+    void testDeleteProfile_NotFound() throws Exception {
+        Long invalidId = 999L;
+        doThrow(new EntityNotFoundException("Profile not found"))
+                .when(deleteProfileService).deleteProfile(invalidId);
+
+        mockMvc.perform(delete("/api/profiles/{id}", invalidId))
+                .andExpect(status().isNotFound());
+
+        verify(deleteProfileService, times(1)).deleteProfile(invalidId);
+    }
+
+    @Test
+    void testDeleteProfile_InvalidIdFormat() throws Exception {
+        mockMvc.perform(delete("/api/profiles/{id}", "abc"))
+                .andExpect(status().isBadRequest());
     }
 }

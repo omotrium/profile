@@ -52,7 +52,6 @@ class GetProfileControllerTest {
         verify(getProfileService, times(1)).getAllProfiles();
     }
 
-
     @Test
     void testGetProfileById() throws Exception {
         when(getProfileService.getProfileById(1L)).thenReturn(Optional.of(testProfile));
@@ -62,6 +61,15 @@ class GetProfileControllerTest {
                 .andExpect(jsonPath("$.name").value("John Doe"));
 
         verify(getProfileService, times(1)).getProfileById(1L);
+    }
+
+    @Test
+    void testGetProfile_NotFound() throws Exception {
+        Long invalidId = 999L;
+        when(getProfileService.getProfileById(invalidId)).thenReturn(Optional.empty()); // Use Optional.empty()
+
+        mockMvc.perform(get("/api/profiles/{id}", invalidId))
+                .andExpect(status().isNotFound());
     }
 
 }
