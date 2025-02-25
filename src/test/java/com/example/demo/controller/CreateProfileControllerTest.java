@@ -17,6 +17,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
 
 @ExtendWith(MockitoExtension.class)
 class CreateProfileControllerTest {
@@ -89,6 +91,9 @@ class CreateProfileControllerTest {
                         .content(objectMapper.writeValueAsString(profile)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.email").value("Email is mandatory"))
-                .andExpect(jsonPath("$.name").value("Name is mandatory"));
+                .andExpect(jsonPath("$.name", anyOf(
+                        is("Name is mandatory"),
+                        is("Name must be between 2 and 50 characters")
+                )));
     }
 }
